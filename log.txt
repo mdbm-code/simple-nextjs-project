@@ -1,0 +1,115 @@
+1. Создал пустой каталог
+2. npm init -y
+3. npm i next react react-dom
+4. в package.json добавил скрипт :"next dev"
+5. создал в корне проекта каталог pages
+6. в нем файл index.js
+7. в файле rafce-сниппет компонент
+8. удалил импорт реакта, в нексе можно без него
+9. <h1>Главная страница</h1>
+10. запустим приложение npm run dev
+11. Создадим вторую страницу users.js
+12. в браузере теперь доступна страница http://localhost:3000/users
+13. Получается что наименование файла является чачтью маршрута
+14. Сделаем меню навигации в файле index.js
+ <div>
+    <a href='/'>Главная</a>
+    <a href='/users'>Пользователи</a>
+ </div>
+15. Обернем теги next-компонентом <Link>
+  <div className="navbar">
+        <Link href='/'>
+          <span>Главная</span>
+        </Link>
+        <Link href='/users'>
+          <span>Пользователи</span>
+        </Link>
+  </div>
+
+16. Создадим сразу под тегом <h1>
+такую конструкцию 
+<h1>Главная страница</h1>
+      <style jsx>
+        {`
+          .navbar {
+            background: orange;
+            padding: 15px;
+          }
+        `}
+      </style>
+с пропсом jsx
+17. С помощью папок можно создавать вложенные маршруты. В каталоге pages создадим подкаталог users 
+и в нем файл с именем [id].js
+затем этот id мы сможем выцеплять из URL
+18. Способ получения данных из URL
+import { useRouter } from 'next/router';
+const { query } = useRouter();
+{query.id}
+19. Как подключать глобальные стили
+в каталоге pages создать файл _app.js
+с таким содержимым: 
+import '../styles/global.css';
+
+export default function App({ Component, pageProps }) {
+  return <Component {...pageProps} />;
+}
+
+так и только так можно подключить глобальные стили
+20. локальныйе ссылки подключаются внутри компонент с использованием специальной строгой системы именования файла
+в компоненте А
+import styles from '../styles/A.module.css';
+при этом сайт файл может лежать где угодно
+
+21. Подключим предпроцессор SASS
+npm i sass
+22. Создадим файл 
+User.module.scss
+с таким содержимым 
+.user {
+  h1 {
+    color: red;
+  }
+}
+
+и теперь в файле [id].js
+импортируем этот файл стилей
+import styles from '../styles/A.module.css';
+и применим таким образом
+<div className={styles.user>
+	<h1>...</h1>
+</div>
+
+23. Как делать запросы в next
+https://jsonplaceholder.typicode.com/users/
+
+на статической странице users.js создадим функцию 
+export const getStaticProps = async (context) => {
+  const res = await fetch('https://jsonplaceholder.typicode.com/users/');
+  const users = await res.json();
+  return { props: { users } };
+};
+ которая выполнит запрос и вернет через пропсы результат в нашу компоненту
+
+
+однако на динамической странице [id].js нужно иначе
+
+export async function getServerSideProps({ params }) {
+  const res = await fetch(
+    `https://jsonplaceholder.typicode.com/users/${params.id}`
+  );
+  const user = await res.json();
+  return { props: { user } };
+}
+
+теперь в пропсах страницы 
+export default function User({ user }) {
+получаем user и генерируем страницу на сервере перед тем как отправить ее на клиента
+24. Метатеги для СЕО
+внутри return используем next-компонент 
+	<Head>
+        <meta keywords='то и то'></meta>
+        <title>Main</title>
+      </Head>
+Теперь мета-данные будут в шапке страницы
+
+ 
